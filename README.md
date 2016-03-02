@@ -20,11 +20,11 @@ VistA is the Open Source Electronic Healthcare Record used by the US Dept of Vet
 	   
 ## Using ewd-qoper8-vistarpc
 
-A working example is provided in the /examples directory.
+A working example is provided in the /example directory.
 
-The master process is defined in /examples/ewd-vista/express
+The master process is defined in /example/ewd-vista/express
 
-The worker process module is /examples/vista-worker-module
+The worker process module is /example/vista-worker-module
 
 ### Preparation
 
@@ -40,7 +40,7 @@ You'll need to install the following:
        npm install ewd-globals-session
        npm install ewd-qoper8-vistarpc       
 
-The worker module (/examples/vista-worker-module.js) assumes that the VistA database is in a Cache namespace called 'VISTA', and
+The worker module (/example/vista-worker-module.js) assumes that the VistA database is in a Cache namespace called 'VISTA', and
 that Cache is installed in /opt/cache.
 
 To adapt the module for use with your system, edit the params object within these lines in the worker module:
@@ -65,11 +65,17 @@ routine name ewdSymbolTable
 - ewdVistARPC.m which you'll find in the ewd-qoper8-vistarpc module directory in the path /mumps.  Save and compile this with the
 routine name ewdVistARPC
 
-By default, the master process (/examples/ewd-vista-express.js) will start Express and tell it to listen on port 8080.
+By default, the master process (/example/ewd-vista-express.js) will start Express and tell it to listen on port 8080.
 If you want to use a different port, edit this line in the master process file:
 
         app.listen(8080);
 
+By default, ewd-qoper8 will use a worker pool-size of 1.  If you want it to make more workers available to ewd-qoper8, 
+simply add the following lines after the app.listen line:
+
+        q.on('start', function() {
+          this.setWorkerPoolSize(3);
+        });
 
 ### Start Express and ewd-qoper8
 
