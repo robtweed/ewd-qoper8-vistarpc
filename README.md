@@ -12,7 +12,10 @@ Google Group for discussions, support, advice etc: [http://groups.google.co.uk/g
 
 This plug-in module for ewd-qoper8 and Express provides the worker module support to access VistA RPCs
 
-VistA is the Open Source Electronic Healthcare Record used by the US Dept of Veterans Affairs. 
+VistA is the Open Source Electronic Healthcare Record used by the US Dept of Veterans Affairs.
+
+For details on ewd-qoper8, see:
+  [http://gradvs1.mgateway.com/download/ewd-qoper8.pdf](http://gradvs1.mgateway.com/download/ewd-qoper8.pdf)
 
 ## Installing
 
