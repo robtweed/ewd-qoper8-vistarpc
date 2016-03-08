@@ -102,30 +102,10 @@ Express will now be running and listening on port 8080 (or whatever you may have
 
 Use a REST Client (eg Chrome Advanced REST Client)
 
-The first thing you need to do is send an initiate request.  This starts a new, as yet unauthenticated Session with an initial
-MUMPS/VistA symbol table:
-
-       GET http://192.168.1.100:8080/vista/initiate
-
-       (change the IP address and port as required)
-
-You should get back a response similar to this:
-
-      {
-        "Authorization": "02d3ad03-87eb-495c-ba86-437cfd99a266"
-        "key": "e609e99713c34bf4b8028bcfc79bad5e"
-        "iv": 9188054014695808
-      }
-
-Currently the key and iv aren't used - high-security login will be supported in the next release.
-
-Copy and paste the value of the Authorization property (without the quotes) into the REST Client's Authorization Header field.
-Also set the Content-Type to application/json
-
-Now login.  You'll need to know a valid VistA Access and Verify code:
+The first thing you need to do is login to VistA.  You'll need to know a valid VistA Access and Verify code:
 
 
-       POST http://192.168.1.100:8080/vista/initiate
+       POST http://192.168.1.100:8080/vista/login
 
 The data payload should be a JSON document containing the Access and Verify codes, eg:
 
@@ -134,11 +114,14 @@ The data payload should be a JSON document containing the Access and Verify code
         "verifyCode": "mYver1fYC0de#"
       }
 
+Make sure you set the Content-Type to application/json
+
 If the credentials aren't correct you'll get an HTTP error response back. Otherwise you should see a VistA
-welcome/login object returned, eg:
+welcome/login object returned, along with a session token eg:
 
 
       {
+        "token": "82aae3b1-3aa4-49de-8cbf-e794e47744ca"
         "displayName": "CHERYL"
         "greeting": "Good afternoon CHERYL"
         "lastSignon": " You last signed on today at 12:39"
@@ -149,6 +132,8 @@ welcome/login object returned, eg:
         3: "Enter '^NML' to read your new messages."
         4: "You've got PRIORITY mail!" -
       }
+
+Copy and paste the value of the token property (without the quotes) into the REST Client's Authorization Header field.
 
 You can now run any RPC that the logged in user has access rights to use:
 
