@@ -60,6 +60,7 @@ q.on('started', function() {
   this.worker.module = 'ewd-qoper8-vistarpc/example/vista-worker-module';
   this.setWorkerIdleLimit(300000);
   app.listen(8080);
+  console.log('ewd-qoper8-vistarpc is now running');
 });
 
 q.start();

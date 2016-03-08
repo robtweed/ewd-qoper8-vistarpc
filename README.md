@@ -90,11 +90,11 @@ You may need to do this as sudo, depending on the permissions settings for Expre
 
 You should see the following:
 
-        Worker Bootstrap Module file written to node_modules/ewd-qoper8-worker.js
-        ========================================================
-        ewd-qoper8 is up and running.  Max worker pool size: 1
-        ========================================================
-        Session Garbage Collector has started
+      Worker Bootstrap Module file written to node_modules/ewd-qoper8-worker.js
+      ========================================================
+      ewd-qoper8 is up and running.  Max worker pool size: 1
+      ========================================================
+      ewd-qoper8-vistarpc is now running
 
 Express will now be running and listening on port 8080 (or whatever you may have changed it to)
 
