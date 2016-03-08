@@ -25,7 +25,7 @@ For details on ewd-qoper8, see:
 
 A working example is provided in the /example directory.
 
-The master process is defined in /example/ewd-vista/express
+The master process is defined in /example/ewd-vista-express
 
 The worker process module is /example/vista-worker-module
 
@@ -39,8 +39,8 @@ You'll need to install the following:
        npm install body-parser
        npm install ewd-qoper8
        npm install ewd-qoper8-express
-       npm install ewd-qoper8-cache
-       npm install ewd-globals-session
+       npm install ewd-qoper8-cache     (this automatically installs the ewd-document-store module)
+       npm install ewd-session
        npm install ewd-qoper8-vistarpc       
 
 The worker module (/example/vista-worker-module.js) assumes that the VistA database is in a Cache namespace called 'VISTA', and
@@ -63,7 +63,7 @@ You can specify any or all of the following properties of params:
 
 You need to also make sure that you install two Cache routines into the namespace you'll be connecting to:
 
-- ewdSymbolTable.m which you'll find in the ewd-globals-session module directory in the path /mumps.  Save and compile this with the
+- ewdSymbolTable.m which you'll find in the ewd-session module directory in the path /mumps.  Save and compile this with the
 routine name ewdSymbolTable
 - ewdVistARPC.m which you'll find in the ewd-qoper8-vistarpc module directory in the path /mumps.  Save and compile this with the
 routine name ewdVistARPC

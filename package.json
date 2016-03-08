@@ -1,6 +1,6 @@
 {
   "name": "ewd-qoper8-vistarpc",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "VistA RPC Interface for use with ewd-qoper8 and Express",
   "main": "index.js",
   "scripts": {

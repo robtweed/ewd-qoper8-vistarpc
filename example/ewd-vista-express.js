@@ -44,7 +44,6 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var qoper8 = require('ewd-qoper8');
 var qx = require('ewd-qoper8-express');
-var sessions = require('ewd-globals-session');
 
 var app = express();
 app.use(bodyParser.json());
@@ -60,7 +59,6 @@ q.on('started', function() {
 
   this.worker.module = 'ewd-qoper8-vistarpc/example/vista-worker-module';
   this.setWorkerIdleLimit(300000);
-  sessions.garbageCollector(q);
   app.listen(8080);
 });
 
