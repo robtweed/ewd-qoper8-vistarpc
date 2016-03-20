@@ -128,8 +128,10 @@ RPCEXECUTE(TMP) ;
  ;s ^rob(ix,"tA1")=$g(tA1)
  X X  ; execute the routine
  ;s ^rob(ix,"executed")=""
- M @TMP@("result","value")=tResult
+ M @TMP@("result","value")=tResult 
  S @TMP@("result","type")=$$EXTERNAL^DILFD(8994,.04,,rpc("resultType"))
+ ;if returns data at tResult["$J" then won't beable to retrieve later. Problem is might be a LOT of data 
+ I @TMP@("result","type")="GLOBAL ARRAY" X "M @TMP@(""result"",""value"")="_tResult 
  S trash=$$success()
  Q "OK"
  ;
