@@ -68,6 +68,15 @@ routine name ewdSymbolTable
 - ewdVistARPC.m which you'll find in the ewd-qoper8-vistarpc module directory in the path /mumps.  Save and compile this with the
 routine name ewdVistARPC
 
+If you're using Cache, you can use the XML export version of each of these routines, eg from within the namespace where you
+want the routines to reside you can import, save and compile the routines programmatically as follows:
+
+      w $system.OBJ.Load("/home/rob/ewd/node_modules/ewd-session/mumps/ewdSymbolTable.xml","ck")
+      w $system.OBJ.Load("/home/rob/ewd/node_modules/ewd-qoper8-vistarpc/mumps/ewdVistARPC.xml","ck")
+
+      ;Note: modify the file paths appropriately for your configuration
+
+
 By default, the master process (/example/ewd-vista-express.js) will start Express and tell it to listen on port 8080.
 If you want to use a different port, edit this line in the master process file:
 
