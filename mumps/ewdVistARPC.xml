@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for UNIX (Red Hat Enterprise Linux for x86-64) 2014.1.3 (Build 775U)" ts="2016-04-01 03:51:29">
-<Routine name="ewdVistARPC" type="INT" languagemode="0" generated="1" timestamp="64008,42858.085084"><![CDATA[
+<Export generator="Cache" version="25" zv="Cache for UNIX (Red Hat Enterprise Linux for x86-64) 2014.1.3 (Build 775U)" ts="2016-04-04 11:05:28">
+<Routine name="ewdVistARPC" type="INT" languagemode="0" generated="1" timestamp="64012,37332.533681"><![CDATA[
 ewdVistARPC ; EWD.js VistA RPC wrapper function
  ;
  ; Modified version of Nikolay Topalov's VistA RPC wrapper function for EWD.js
@@ -137,10 +137,11 @@ RPCEXECUTE(TMP, sessionId, sessionGlobal) ;
  S @TMP@("result","type")=$$EXTERNAL^DILFD(8994,.04,,rpc("resultType"))
  I @TMP@("result","type")="GLOBAL ARRAY",$g(sessionId)'="" d
  . n sessRef
- . s sessRef="^"_sessionGlobal_"(""session"","_sessionId_",""GLOBAL_ARRAY"")"
+ . s sessRef="^"_sessionGlobal_"(""session"","_sessionId_",""GLOBAL_ARRAY"","""_pRpc("name")_""")"
  . s X="K "_sessRef X X
  . s X="M "_sessRef_"="_tResult X X
  . k @TMP@("result","value")
+ . k @tResult
  S trash=$$success()
  Q "OK"
  ;

@@ -1,7 +1,7 @@
 /*
 
  ----------------------------------------------------------------------------
- | ewd-qoper8.js: Node.js Queue and Multi-process Manager                   |
+ | ewd-vista-rpc: VistA RPC REST interface using ewd-qoper8                 |
  |                                                                          |
  | Copyright (c) 2016 M/Gateway Developments Ltd,                           |
  | Reigate, Surrey UK.                                                      |
@@ -26,51 +26,52 @@
 
   4 April 2016
 
-  Demonstrates use of vista1.js worker module which connects each
-  worker process to the Cache database, intergrated with Express
-
-  This version makes use of the ewd-qoper8-cache module for connecting
-  Cache to an ewd-qoper8 worker process
-
-    start using:
-
-      node frontend2
-
-    You may need to run this as sudo due to Cache permissions
-
 */
 
-var express = require('express');
-var bodyParser = require('body-parser');
-var qoper8 = require('ewd-qoper8');
-var qx = require('ewd-qoper8-express');
+// ewd-qoper8 Worker Module example which implements VistA RPC access on a Cache system
 
-var app = express();
-app.use(bodyParser.json());
-app.use(function(err, req, res, next) {
-  if (err) {
-    res.status(400).send({error: err});
-    return;
-  }
-  next();
-});
 
-var q = new qoper8.masterProcess();
-qx.addTo(q);
+module.exports = function() {
 
-app.use('/vista', qx.router());
+  // load standard qoper8-express formatted message handlers:
 
-q.on('started', function() {
+  var handleExpressMessage = require('ewd-qoper8-express').workerMessage;
 
-  // Worker processes will load the vista1.js module:
+  // load VistA RPC-specific handlers
 
-  this.worker.module = 'ewd-qoper8-vistarpc/example/vista-worker-module';
-  //this.worker.module = 'vista-worker-module';
-  var port = 8080;
-  app.listen(port);
+  var vistaRPC = require('ewd-qoper8-vistarpc');
 
-  console.log('ewd-qoper8-vistarpc is now running and listening on port ' + port);
-});
+  this.on('start', function(isFirst) {
 
-q.start();
+    // set up standard VistA RPC message handlers (initiate, login and authentication)
+    vistaRPC.httpHandlers.call(this);
+    this.vistARPC = {
+      context: 'HMP UI CONTEXT',
+      cleardown: {
+        'HMP WRITEBACK ALLERGY': ["ALLERGY", "GMRA", "HMPF"]
+      }
+    };
 
+    // handler to catch all other vista.* requests
+
+    this.on('VistAMessage', function(messageObj, session, send, finished) {
+      console.log('*** VistAMessage: ' + session.id);
+      finished({error: 'No handler defined for VistA messages of type ' + messageObj.expressType});
+    });
+
+    // connect worker to Cache and start globalStore abstraction
+
+    var connectCacheTo = require('ewd-qoper8-cache');
+    var params = {
+      path: '/usr/cachesys/mgr',
+      namespace: 'VISTA'
+    };
+    connectCacheTo(this, params);
+
+  });
+
+  this.on('message', function(messageObj, send, finished) {
+    var expressMessage = handleExpressMessage.call(this, messageObj, send, finished);
+  });
+
+};
