@@ -32,7 +32,7 @@ test()
  s ok=$$RPCEXECUTE("^TMP($j)")
  QUIT ok
  ;
-RPCEXECUTE(TMP, sessionId, sessionGlobal) ;
+RPCEXECUTE(TMP,sessionId,sessionGlobal) ;
  ;n ix
  ;s ix=$increment(^rob)
  ;m ^rob(ix)=@TMP
@@ -78,6 +78,7 @@ RPCEXECUTE(TMP, sessionId, sessionGlobal) ;
  N rpc,pRpc,tArgs,tCnt,tI,tOut,trash,tResult,X
  ;
  S U=$G(U,"^")  ; set default to "^"
+ S $ETRAP="D ^%ZTER d errorPointer D UNWIND^%ZTER"
  ;
  S pRpc("name")=$G(@TMP@("name"))
  I pRpc("name")="XUS SIGNON SETUP" d HOME^%ZIS
@@ -87,7 +88,7 @@ RPCEXECUTE(TMP, sessionId, sessionGlobal) ;
  . s avcode=$$ENCRYP^XUSRB1(avcode)
  . s @TMP@("input",1,"value")=avcode
  ;
- S:pRpc("name")["ORWDX SEND" ^TMP($J,"input",5,"value")=""
+ I pRpc("name")["ORWDX SEND",'$D(^TMP($J,"input",5,"value")) S ^TMP($J,"input",5,"value")=""
  Q:pRpc("name")="" $$error(-1,"RPC name is missing")
  ;
  S rpc("ien")=$O(^XWB(8994,"B",pRpc("name"),""))
@@ -134,7 +135,6 @@ RPCEXECUTE(TMP, sessionId, sessionGlobal) ;
  S @TMP@("result","type")=$$EXTERNAL^DILFD(8994,.04,,rpc("resultType"))
  I @TMP@("result","type")="GLOBAL ARRAY",$g(sessionId)'="" d
  . n sessRef
- . ;s sessRef="^"_sessionGlobal_"(""session"","_sessionId_",""GLOBAL_ARRAY"")"
  . s sessRef="^"_sessionGlobal_"(""session"","_sessionId_",""GLOBAL_ARRAY"","""_pRpc("name")_""")"
  . s X="K "_sessRef X X
  . s X="M "_sessRef_"="_tResult X X
@@ -235,4 +235,16 @@ CHKPRMIT(pRPCName,pUser,pContext) ;checks to see if remote procedure is permited
  S:'X result=X
  Q result
  ;
- 
+errorPointer ;
+ ; Save the latest error pointer into the ^TMP global
+ ;  so that the error details can be recovered later
+ n dd,no,rec
+ s rec=$g(^%ZTER(1,0))
+ s dd=$p(rec,"^",3)
+ s rec=$g(^%ZTER(1,dd,0))
+ s no=$p(rec,"^",2)
+ s ^TMP($j,"ERRORTRAP",0)=1
+ s ^TMP($j,"ERRORTRAP",1)=dd
+ s ^TMP($j,"ERRORTRAP",2)=1
+ s ^TMP($j,"ERRORTRAP",3)=no
+ QUIT

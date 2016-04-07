@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for UNIX (Red Hat Enterprise Linux for x86-64) 2014.1.3 (Build 775U)" ts="2016-04-04 11:05:28">
-<Routine name="ewdVistARPC" type="INT" languagemode="0" generated="1" timestamp="64012,37332.533681"><![CDATA[
+<Export generator="Cache" version="25" zv="Cache for UNIX (SUSE Linux Enterprise Server for x86-64) 2015.2 (Build 664U)" ts="2016-04-07 17:33:44">
+<Routine name="ewdVistARPC" type="INT" languagemode="0" generated="1" timestamp="64015,62610.520818"><![CDATA[
 ewdVistARPC ; EWD.js VistA RPC wrapper function
  ;
  ; Modified version of Nikolay Topalov's VistA RPC wrapper function for EWD.js
@@ -35,7 +35,7 @@ test()
  s ok=$$RPCEXECUTE("^TMP($j)")
  QUIT ok
  ;
-RPCEXECUTE(TMP, sessionId, sessionGlobal) ;
+RPCEXECUTE(TMP,sessionId,sessionGlobal) ;
  ;n ix
  ;s ix=$increment(^rob)
  ;m ^rob(ix)=@TMP
@@ -81,6 +81,7 @@ RPCEXECUTE(TMP, sessionId, sessionGlobal) ;
  N rpc,pRpc,tArgs,tCnt,tI,tOut,trash,tResult,X
  ;
  S U=$G(U,"^")  ; set default to "^"
+ S $ETRAP="D ^%ZTER d errorPointer D UNWIND^%ZTER"
  ;
  S pRpc("name")=$G(@TMP@("name"))
  I pRpc("name")="XUS SIGNON SETUP" d HOME^%ZIS
@@ -90,7 +91,7 @@ RPCEXECUTE(TMP, sessionId, sessionGlobal) ;
  . s avcode=$$ENCRYP^XUSRB1(avcode)
  . s @TMP@("input",1,"value")=avcode
  ;
- S:pRpc("name")["ORWDX SEND" ^TMP($J,"input",5,"value")=""
+ I pRpc("name")["ORWDX SEND",'$D(^TMP($J,"input",5,"value")) S ^TMP($J,"input",5,"value")=""
  Q:pRpc("name")="" $$error(-1,"RPC name is missing")
  ;
  S rpc("ien")=$O(^XWB(8994,"B",pRpc("name"),""))
@@ -237,5 +238,18 @@ CHKPRMIT(pRPCName,pUser,pContext) ;checks to see if remote procedure is permited
  S:'X result=X
  Q result
  ;
+errorPointer ;
+ ; Save the latest error pointer into the ^TMP global
+ ;  so that the error details can be recovered later
+ n dd,no,rec
+ s rec=$g(^%ZTER(1,0))
+ s dd=$p(rec,"^",3)
+ s rec=$g(^%ZTER(1,dd,0))
+ s no=$p(rec,"^",2)
+ s ^TMP($j,"ERRORTRAP",0)=1
+ s ^TMP($j,"ERRORTRAP",1)=dd
+ s ^TMP($j,"ERRORTRAP",2)=1
+ s ^TMP($j,"ERRORTRAP",3)=no
+ QUIT
 ]]></Routine>
 </Export>
