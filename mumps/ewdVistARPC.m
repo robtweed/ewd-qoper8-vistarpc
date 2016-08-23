@@ -1,4 +1,4 @@
-ewdVistARPC ; EWD.js VistA RPC wrapper function
+ewdVistARPC ; EWD.js VistA RPC wrapper function ; 8/16/16 3:19pm
  ;
  ; Modified version of Nikolay Topalov's VistA RPC wrapper function for EWD.js
  ; 
@@ -27,7 +27,7 @@ ewdVistARPC ; EWD.js VistA RPC wrapper function
  ;;
  QUIT
  ;
-test()
+test() 
  s ^TMP($j,"name")="XUS SIGNON SETUP"
  s ok=$$RPCEXECUTE("^TMP($j)")
  QUIT ok
@@ -38,6 +38,8 @@ RPCEXECUTE(TMP,sessionId,sessionGlobal) ;
  ;m ^rob(ix)=@TMP
  ;s ^robSession(ix,"id")=$g(sessionId)
  ;s ^robSession(ix,"global")=$g(sessionGlobal)
+ ; TODO: Get rid of the notion of context. Check RPCs dynamically
+ ; against all contexts that the user has.
  ;
  ; Execute an RPC based on paramaters provided in TMP reference global
  ;
@@ -87,6 +89,17 @@ RPCEXECUTE(TMP,sessionId,sessionGlobal) ;
  . s avcode=$G(@TMP@("input",1,"value"))
  . s avcode=$$ENCRYP^XUSRB1(avcode)
  . s @TMP@("input",1,"value")=avcode
+ i pRpc("name")="XUS CVC" d
+ . n cvc s cvc=$G(@TMP@("input",1,"value"))
+ . n p1,p2,p3,ep1,ep2,ep3
+ . s p1=$p(cvc,U,1),ep1=$$ENCRYP^XUSRB1(p1)
+ . s p2=$p(cvc,U,2),ep2=$$ENCRYP^XUSRB1(p2)
+ . s p3=$p(cvc,U,3),ep3=$$ENCRYP^XUSRB1(p3)
+ . s @TMP@("input",1,"value")=ep1_U_ep2_U_ep3
+ i pRpc("name")="XWB CREATE CONTEXT" d
+ . n ctx s ctx=$G(@TMP@("input",1,"value"))
+ . n ectx s ectx=$$ENCRYP^XUSRB1(ctx)
+ . s @TMP@("input",1,"value")=ectx
  ;
  I pRpc("name")["ORWDX SEND",'$D(^TMP($J,"input",5,"value")) S ^TMP($J,"input",5,"value")=""
  Q:pRpc("name")="" $$error(-1,"RPC name is missing")
