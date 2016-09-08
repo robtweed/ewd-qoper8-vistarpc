@@ -28,7 +28,7 @@ ewdVistARPC ; EWD.js VistA RPC wrapper function ; 8/16/16 3:19pm
  QUIT
  ;
 test() 
- s ^TMP($j,"name")="XUS SIGNON SETUP"
+ s ^TMP($j,"name")="ORWUX SYMTAB"
  s ok=$$RPCEXECUTE("^TMP($j)")
  QUIT ok
  ;
@@ -77,10 +77,12 @@ RPCEXECUTE(TMP,sessionId,sessionGlobal) ;
  ;    result 1 - success
  ;           0 - error
  ;
+ S XWBVER=999 ; Set here; so that XQY0 won't be killed in POST2^XUSRB
  N rpc,pRpc,tArgs,tCnt,tI,tOut,trash,tResult,X
  ;
  S U=$G(U,"^")  ; set default to "^"
- S $ETRAP="D ^%ZTER d errorPointer D UNWIND^%ZTER"
+ ;S $ETRAP="D ^%ZTER d errorPointer D UNWIND^%ZTER"
+ S $ETRAP="D ^%ZTER,UNWIND^%ZTER"
  ;
  S pRpc("name")=$G(@TMP@("name"))
  I pRpc("name")="XUS SIGNON SETUP" d HOME^%ZIS
@@ -109,7 +111,7 @@ RPCEXECUTE(TMP,sessionId,sessionGlobal) ;
  ;
  S XWBAPVER=$G(@TMP@("version"))
  S pRpc("use")=$G(@TMP@("use"))
- S pRpc("context")=$G(@TMP@("context"))
+ ; S pRpc("context")=$G(@TMP@("context"))
  S pRpc("division")=$G(@TMP@("division"))
  ;
  S:'$D(DUZ(2)) DUZ(2)=pRpc("division")
@@ -127,7 +129,7 @@ RPCEXECUTE(TMP,sessionId,sessionGlobal) ;
  D CKRPC^XWBLIB(.tOut,pRpc("name"),pRpc("use"),XWBAPVER)
  Q:'tOut $$error(-3,"RPC ["_pRpc("name")_"] cannot be run at this time.")
  ;
- S X=$$CHKPRMIT(pRpc("name"),$G(DUZ),pRpc("context"))
+ S X=$$CHKPRMIT(pRpc("name"),$G(DUZ))
  Q:X'="" $$error(-4,"RPC ["_pRpc("name")_"] is not allowed to be run: "_X)
  ;
  S X=$$buildArguments(.tArgs,rpc("ien"),TMP)  ; build RPC arguments list - tArgs
@@ -217,11 +219,11 @@ success(code,message) ;
  Q $$formatResult(1,$G(code)_" "_$G(message))
  ;
  ; Is RPC pertmited to run in a context?
-CHKPRMIT(pRPCName,pUser,pContext) ;checks to see if remote procedure is permited to run
+CHKPRMIT(pRPCName,DUZ) ;checks to see if remote procedure is permited to run
  ;Input:  pRPCName - Remote procedure to check
- ;        pUser    - User
- ;        pContext - RPC Context
- Q:$$KCHK^XUSRB("XUPROGMODE",pUser) ""  ; User has programmer key
+ ;        DUZ    - User
+ ;        In Symbol Table: XQY0 for the context
+ I DUZ Q:$$KCHK^XUSRB("XUPROGMODE",DUZ) ""  ; User has programmer key
  N result,X
  N XQMES
  S U=$G(U,"^")
@@ -229,22 +231,23 @@ CHKPRMIT(pRPCName,pUser,pContext) ;checks to see if remote procedure is permited
  ;
  ;In the beginning, when no DUZ is defined and no context exist,
  ;setup default signon context
- S:'$G(pUser) pUser=0,pContext="XUS SIGNON"   ;set up default context
+ S:'DUZ DUZ=0,XQY0="XUS SIGNON"   ;set up default context
+ ;
+ ; If you want to see what's going on, comment these in, and kill ^SAM in Prog Mode.
+ ;N % S %=$I(^SAM)
+ ;ZSHOW "V":^SAM(%)
  ;
  ;These RPC's are allowed in any context, so we can just quit
  S X="^XWB IM HERE^XWB CREATE CONTEXT^XWB RPC LIST^XWB IS RPC AVAILABLE^XUS GET USER INFO^XUS GET TOKEN^XUS SET VISITOR^"
  S X=X_"XUS KAAJEE GET USER INFO^XUS KAAJEE LOGOUT^"  ; VistALink RPC's that are always allowed.
  I X[(U_pRPCName_U) Q result
  ;
- ;
  ;If in Signon context, only allow XUS and XWB rpc's
- I $G(pContext)="XUS SIGNON","^XUS^XWB^"'[(U_$E(pRPCName,1,3)_U) Q "Application context has not been created!"
+ I $G(XQY0)="XUS SIGNON","^XUS^XWB^"'[(U_$E(pRPCName,1,3)_U) Q "Application context has not been created 1!"
  ;XQCS allows all users access to the XUS SIGNON context.
  ;Also to any context in the XUCOMMAND menu.
  ;
- I $G(pContext)="" Q "Application context has not been created!"
- ;
- S X=$$CHK^XQCS(pUser,pContext,pRPCName)         ;do the check
+ S X=$$CHK^XQCS(DUZ,XQY0,pRPCName)         ;do the check
  S:'X result=X
  Q result
  ;
