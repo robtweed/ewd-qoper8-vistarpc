@@ -28,6 +28,7 @@ ewdVistARPC ; EWD.js VistA RPC wrapper function ; 8/16/16 3:19pm
  QUIT
  ;
 test() 
+ s XQY0="OR CPRS GUI CHART"
  s ^TMP($j,"name")="ORWUX SYMTAB"
  s ok=$$RPCEXECUTE("^TMP($j)")
  QUIT ok
@@ -148,13 +149,15 @@ RPCEXECUTE(TMP,sessionId,sessionGlobal) ;
  ;s ^rob(ix,"executed")=""
  M @TMP@("result","value")=tResult
  S @TMP@("result","type")=$$EXTERNAL^DILFD(8994,.04,,rpc("resultType"))
- I @TMP@("result","type")="GLOBAL ARRAY",$g(sessionId)'="" d
- . n sessRef
- . s sessRef="^"_sessionGlobal_"(""session"","_sessionId_",""GLOBAL_ARRAY"","""_pRpc("name")_""")"
- . s X="K "_sessRef X X
- . s X="M "_sessRef_"="_tResult X X
- . k @TMP@("result","value")
- . k @tResult
+ ; VEN/SMH - Please don't do that! Copying Globals is expensive. That's why
+ ;           the data is in a global in the first place.
+ ; I @TMP@("result","type")="GLOBAL ARRAY",$g(sessionId)'="" d
+ ; . n sessRef
+ ; . s sessRef="^"_sessionGlobal_"(""session"","_sessionId_",""GLOBAL_ARRAY"","""_pRpc("name")_""")"
+ ; . s X="K "_sessRef X X
+ ; . s X="M "_sessRef_"="_tResult X X
+ ; . k @TMP@("result","value")
+ ; . k @tResult
  S trash=$$success()
  Q "OK"
  ;
@@ -234,8 +237,8 @@ CHKPRMIT(pRPCName,DUZ) ;checks to see if remote procedure is permited to run
  S:'DUZ DUZ=0,XQY0="XUS SIGNON"   ;set up default context
  ;
  ; If you want to see what's going on, comment these in, and kill ^SAM in Prog Mode.
- ;N % S %=$I(^SAM)
- ;ZSHOW "V":^SAM(%)
+ N % S %=$I(^SAM)
+ ZSHOW "V":^SAM(%)
  ;
  ;These RPC's are allowed in any context, so we can just quit
  S X="^XWB IM HERE^XWB CREATE CONTEXT^XWB RPC LIST^XWB IS RPC AVAILABLE^XUS GET USER INFO^XUS GET TOKEN^XUS SET VISITOR^"
