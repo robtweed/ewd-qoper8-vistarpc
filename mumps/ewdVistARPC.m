@@ -82,8 +82,7 @@ RPCEXECUTE(TMP,sessionId,sessionGlobal) ;
  N rpc,pRpc,tArgs,tCnt,tI,tOut,trash,tResult,X
  ;
  S U=$G(U,"^")  ; set default to "^"
- ;S $ETRAP="D ^%ZTER d errorPointer D UNWIND^%ZTER"
- S $ETRAP="D ^%ZTER,UNWIND^%ZTER"
+ S $ETRAP="D ^%ZTER d errorPointer D UNWIND^%ZTER"
  ;
  S pRpc("name")=$G(@TMP@("name"))
  I pRpc("name")="XUS SIGNON SETUP" d HOME^%ZIS
@@ -112,10 +111,6 @@ RPCEXECUTE(TMP,sessionId,sessionGlobal) ;
  ;
  S XWBAPVER=$G(@TMP@("version"))
  S pRpc("use")=$G(@TMP@("use"))
- ; S pRpc("context")=$G(@TMP@("context"))
- S pRpc("division")=$G(@TMP@("division"))
- ;
- S:'$D(DUZ(2)) DUZ(2)=pRpc("division")
  ;
  S X=$G(^XWB(8994,rpc("ien"),0)) ;e.g., XWB EGCHO STRING^ECHO1^XWBZ1^1^R
  S rpc("routineTag")=$P(X,"^",2)
@@ -149,15 +144,6 @@ RPCEXECUTE(TMP,sessionId,sessionGlobal) ;
  ;s ^rob(ix,"executed")=""
  M @TMP@("result","value")=tResult
  S @TMP@("result","type")=$$EXTERNAL^DILFD(8994,.04,,rpc("resultType"))
- ; VEN/SMH - Please don't do that! Copying Globals is expensive. That's why
- ;           the data is in a global in the first place.
- ; I @TMP@("result","type")="GLOBAL ARRAY",$g(sessionId)'="" d
- ; . n sessRef
- ; . s sessRef="^"_sessionGlobal_"(""session"","_sessionId_",""GLOBAL_ARRAY"","""_pRpc("name")_""")"
- ; . s X="K "_sessRef X X
- ; . s X="M "_sessRef_"="_tResult X X
- ; . k @TMP@("result","value")
- ; . k @tResult
  S trash=$$success()
  Q "OK"
  ;
@@ -236,9 +222,9 @@ CHKPRMIT(pRPCName,DUZ) ;checks to see if remote procedure is permited to run
  ;setup default signon context
  S:'DUZ DUZ=0,XQY0="XUS SIGNON"   ;set up default context
  ;
- ; If you want to see what's going on, comment these in, and kill ^SAM in Prog Mode.
- N % S %=$I(^SAM)
- ZSHOW "V":^SAM(%)
+ ; If you want to see what's going on, comment these in, and kill ^SAM in Prog Mode (GT.M Only).
+ ; N % S %=$I(^SAM)
+ ; ZSHOW "V":^SAM(%)
  ;
  ;These RPC's are allowed in any context, so we can just quit
  S X="^XWB IM HERE^XWB CREATE CONTEXT^XWB RPC LIST^XWB IS RPC AVAILABLE^XUS GET USER INFO^XUS GET TOKEN^XUS SET VISITOR^"
